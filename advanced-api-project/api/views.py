@@ -7,10 +7,11 @@ from .models import Book
 from .serializers import BookSerializer
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter, OrderingFilter #"filters.OrderingFilter"
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters import rest_framework
+
 
 class TestView(APIView):
     def get(self, request):
