@@ -53,3 +53,9 @@ This project is designed to demonstrate the use of Django REST Framework to crea
 - **Filter by title**: `http://127.0.0.1:8000/api/books/?title=SomeTitle`
 - **Search by author name**: `http://127.0.0.1:8000/api/books/?search=AuthorName`
 - **Order by publication year**: `http://127.0.0.1:8000/api/books/?ordering=publication_year`
+## Testing
+
+### Running Tests
+To run the tests, use the following command:
+```bash
+python manage.py test api
