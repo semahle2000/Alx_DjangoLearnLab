@@ -6,8 +6,7 @@ from rest_framework import generics
 from .models import Book
 from .serializers import BookSerializer
 from rest_framework import serializers
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 class TestView(APIView):
     def get(self, request):
@@ -23,16 +22,6 @@ class BookSerializer(serializers.ModelSerializer):
         if value > datetime.date.today().year:
             raise serializers.ValidationError("Publication year cannot be in the future.")
         return value
-    
-
-class BookListView(generics.ListAPIView):
-    """
-    BookListView handles listing all books.
-    - GET: List all books.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookCreateView(generics.CreateAPIView):
     """
@@ -42,15 +31,6 @@ class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
-
-class BookDetailView(generics.RetrieveAPIView):
-    """
-    BookDetailView handles retrieving a book by ID.
-    - GET: Retrieve a book by ID.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookUpdateView(generics.UpdateAPIView):
     """
@@ -64,6 +44,27 @@ class BookUpdateView(generics.UpdateAPIView):
 class BookDeleteView(generics.DestroyAPIView):
     """
     BookDeleteView handles deleting a book by ID.
+    - DELETE: Delete a book by ID (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
+    
+class BookListView(generics.ListCreateAPIView):
+    """
+    BookListView handles listing all books and creating a new book.
+    - GET: List all books.
+    - POST: Create a new book (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    BookDetailView handles retrieving, updating, and deleting a book by ID.
+    - GET: Retrieve a book by ID.
+    - PUT: Update a book by ID (authenticated users only).
     - DELETE: Delete a book by ID (authenticated users only).
     """
     queryset = Book.objects.all()
