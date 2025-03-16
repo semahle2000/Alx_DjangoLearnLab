@@ -10,9 +10,17 @@ Unit tests for the Book model endpoints.
 - Test permissions and authentication mechanisms.
 """
 
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from django.contrib.auth.models import User
+from .models import Author, Book
+
 class BookTests(APITestCase):
 
     def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.client.login(username='testuser', password='testpassword')
         self.author = Author.objects.create(name="Author Name")
         self.book = Book.objects.create(title="Book Title", publication_year=2023, author=self.author)
 
