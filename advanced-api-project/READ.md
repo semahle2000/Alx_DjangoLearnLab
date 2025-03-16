@@ -32,3 +32,24 @@ This project is designed to demonstrate the use of Django REST Framework to crea
 
 ## Custom Settings
 - Custom validation for the `publication_year` field in the `BookSerializer` to ensure it is not in the future.
+
+## Advanced API Project
+
+### Filtering, Searching, and Ordering
+
+#### Filtering
+- **Endpoint**: `/api/books/?title=SomeTitle`
+- **Description**: Filter books by title.
+
+#### Searching
+- **Endpoint**: `/api/books/?search=AuthorName`
+- **Description**: Search books by author name.
+
+#### Ordering
+- **Endpoint**: `/api/books/?ordering=publication_year`
+- **Description**: Order books by publication year.
+
+### Examples
+- **Filter by title**: `http://127.0.0.1:8000/api/books/?title=SomeTitle`
+- **Search by author name**: `http://127.0.0.1:8000/api/books/?search=AuthorName`
+- **Order by publication year**: `http://127.0.0.1:8000/api/books/?ordering=publication_year`
