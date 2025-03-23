@@ -12,7 +12,7 @@ class Post(models.Model):
     content = models.TextField()
     tags = models.ManyToManyField('Tag', related_name='posts')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) #published_date is renamed to created_at
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
