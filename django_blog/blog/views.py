@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Comment
+from .models import Post, Comment,Tag
 from .forms import CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
@@ -153,3 +153,8 @@ def search(request):
         Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
     ).distinct()
     return render(request, 'blog/search_results.html', {'results': results})
+
+def posts_by_tag(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags=tag)
+    return render(request, 'posts_by_tag.html', {'posts': posts, 'tag': tag})
