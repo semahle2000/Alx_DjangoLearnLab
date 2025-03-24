@@ -5,13 +5,14 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Comment,Tag
+from .models import Post, Comment, Tag
 from .forms import CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 
 #ListView", "DetailView", "CreateView", "UpdateView", "DeleteView"
 
+# User registration view
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -32,12 +33,12 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    
+
 # DetailView to show individual blog posts
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
-    
+
 # CreateView to allow authenticated users to create new posts
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -47,7 +48,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-    
+
 # UpdateView to enable post authors to edit their posts
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -61,7 +62,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
-    
+
 # DeleteView to let authors delete their posts
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -71,6 +72,8 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+# Detail view for individual posts with comments
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all()
@@ -143,10 +146,11 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
-    
+
     def get_success_url(self):
         return self.object.post.get_absolute_url()
 
+# Search functionality
 def search(request):
     query = request.GET.get('q')
     results = Post.objects.filter(
@@ -154,7 +158,23 @@ def search(request):
     ).distinct()
     return render(request, 'blog/search_results.html', {'results': results})
 
+# Function-based view to display posts by tag
 def posts_by_tag(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
     posts = Post.objects.filter(tags=tag)
-    return render(request, 'posts_by_tag.html', {'posts': posts, 'tag': tag})
+    return render(request, 'blog/posts_by_tag.html', {'posts': posts, 'tag': tag})
+
+# Class-based view to display posts by tag
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        self.tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        return Post.objects.filter(tags=self.tag)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        return context
